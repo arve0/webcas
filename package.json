@@ -1,0 +1,32 @@
+{
+  "name": "webcas",
+  "version": "1.0.0",
+  "description": "Computer Algebra System in the browser",
+  "main": "index.js",
+  "scripts": {
+    "start": "watchify --debug src/index.js -o index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arve0/webcas.git"
+  },
+  "keywords": [
+    "cas",
+    "math",
+    "algebra"
+  ],
+  "author": "Arve Seljebu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/arve0/webcas/issues"
+  },
+  "homepage": "https://github.com/arve0/webcas#readme",
+  "dependencies": {
+    "mathjs": "3.13.1",
+    "redux": "^3.6.0"
+  },
+  "devDependencies": {
+    "watchify": "^3.9.0"
+  }
+}
