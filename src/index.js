@@ -113,7 +113,12 @@ function Step (step) {
     }
   }
 
+  function onClick () {
+    store.dispatch({ type: 'FOCUS', num: step.num })
+  }
+
   input.addEventListener('keydown', onKey)
+  input.addEventListener('click', onClick)
   elm.appendChild(input)
 
   elm.appendChild(Output(step.output))
