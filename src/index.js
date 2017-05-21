@@ -144,14 +144,18 @@ function Elm (html) {
 
 function evaluateInput (input, scope) {
   const precision = 8
-  let node, evaluated
+  let node, evaluated, output
   try {
     node = math.parse(input)
-    evaluated = node.eval(scope)
+    try {
+      evaluated = node.eval(scope)
+    } catch (err) {
+      evaluated = math.simplify(node)
+    }
   } catch (err) {
-    evaluated = err.message
+    output = err.message
   }
-  let output = typeof evaluated === 'function' ? node.toString() : evaluated
+  output = typeof evaluated === 'function' ? node.toString() : evaluated
   output = output === undefined ? '' : output
   output = typeof output === 'number' ? math.format(output, precision) : output
   return [ node, evaluated, output ]
