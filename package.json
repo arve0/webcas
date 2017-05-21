@@ -4,6 +4,7 @@
   "description": "Computer Algebra System in the browser",
   "main": "index.js",
   "scripts": {
+    "watch-algebra": "watchify --debug src/algebra.js -o algebra.js",
     "start": "watchify --debug src/index.js -o index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,6 +24,7 @@
   },
   "homepage": "https://github.com/arve0/webcas#readme",
   "dependencies": {
+    "algebra.js": "^0.2.6",
     "mathjs": "3.13.1",
     "redux": "^3.6.0"
   },
