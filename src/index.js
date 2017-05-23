@@ -24,16 +24,10 @@ function reducer (state = initialState, action) {
 
     case 'STEP INPUT':
       {
-        let num = action.num
-        let input = action.input
         let newState = Object.assign({}, state, {
           steps: [...state.steps]
         })
-        // copy previous scope or create new (first step)
-        // scope can be mutated in math.eval, and the mutated scope is saved to current step
-        let scope = num > 0 ? Object.assign({}, state.steps[num - 1].scope) : {}
-        let [node, evaluated, output] = evaluateInput(input, scope)
-        newState.steps[num] = { num, input, node, evaluated, output, scope }
+        newState.steps[action.num] = { input: action.input, num: action.num }
         return newState
       }
 
@@ -69,13 +63,20 @@ store.subscribe(() => {
 
   state.steps.forEach((step, i) => {
     let _step = _steps[i]
+
     if (!_step) {
       _step = Step(step)
       _steps.push(_step)
       document.getElementById('steps').appendChild(_step.root)
-    } else {
-      _step.updateOutput(step.output)
     }
+
+    // calculate
+    // scope can be mutated in math.eval, the mutated scope is saved to current step
+    // first step: create new scope
+    // else: copy previous scope
+    _step.scope = i === 0 ? {} : Object.assign({}, _steps[i - 1].scope)
+    _step.updateOutput(evaluateInput(step.input, _step.scope))
+
     if (state.focus === step.num && !_step.input.activeElement) {
       _step.input.focus()
     }
@@ -86,9 +87,8 @@ store.dispatch({ type: 'ADD STEP' })
 
 function Step (step) {
   let root = Elm('<div class=step></div>')
-
-  let input = Input(step.input)
-  let output = Output(step.output)
+  let input = Elm(`<input type=text>`)
+  let output = Elm(`<div class=output></div>`)
 
   function keyDown (event) {
     let kc = event.keyCode
@@ -98,11 +98,11 @@ function Step (step) {
     }
     event.preventDefault()
 
-    if (kc === 38 || (event.shiftKey && kc === 9)) {  // up or tab shift
+    if (kc === 38 || (event.shiftKey && kc === 9)) {  // up or tab shift
       store.dispatch({ type: 'FOCUS DECREMENT' })
     } else if (kc === 13 && step.num === store.getState().steps.length - 1) {  // enter on last input
       store.dispatch({ type: 'ADD STEP' })
-    } else if (kc === 9 || kc === 13 || kc === 40) {  // tab, enter or down
+    } else if (kc === 9 || kc === 13 || kc === 40) {  // tab, enter or down
       store.dispatch({ type: 'FOCUS INCREMENT' })
     }
   }
@@ -133,16 +133,6 @@ function Step (step) {
   return { root, input, output, updateOutput }
 }
 
-function Input (value) {
-  let elm = Elm(`<input type=text>`)
-  elm.value = value
-  return elm
-}
-
-function Output (str) {
-  return Elm(`<div class=output>${str}</div>`)
-}
-
 function Elm (html) {
   let div = document.createElement('div')
   div.innerHTML = html
@@ -166,5 +156,5 @@ function evaluateInput (input, scope) {
   output = typeof evaluated === 'function' ? node.toString() : evaluated
   output = output === undefined ? '' : output
   output = typeof output === 'number' ? math.format(output, precision) : output
-  return [ node, evaluated, output ]
+  return output
 }
