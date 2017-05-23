@@ -21,6 +21,11 @@ function reducer (state = initialState, action) {
         steps: [...state.steps.slice(0, action.num), '', ...state.steps.slice(action.num)]
       })
 
+    case 'REMOVE STEP':
+      return Object.assign({}, state, {
+        steps: state.steps.filter((s, i) => i !== action.num)
+      })
+
     case 'STEP INPUT':
       return Object.assign({}, state, {
         steps: [...state.steps.slice(0, action.num), action.input, ...state.steps.slice(action.num + 1)]
@@ -91,6 +96,7 @@ function Step (num, inputValue) {
   let root = Elm('<div class=step></div>')
   let input = Elm(`<input type=text>`)
   let output = Elm(`<div class=output></div>`)
+  let deleteMe = false
 
   input.value = inputValue
 
@@ -100,6 +106,9 @@ function Step (num, inputValue) {
     if (!(kc === 9 || kc === 13 || kc === 38 || kc === 40)) {
       return
     }
+
+    // tab on last field -> avoid address bar
+    // arrows -> avoid going to start/end of input field
     event.preventDefault()
 
     if (kc === 38 || (event.shiftKey && kc === 9)) {
@@ -122,12 +131,27 @@ function Step (num, inputValue) {
     store.dispatch({ type: 'FOCUS', num })
   }
 
-  function keyUp () {
+  function keyUp (event) {
     store.dispatch({
       type: 'STEP INPUT',
       input: input.value,
       num
     })
+
+    // 8 backspace
+    if (event.keyCode === 8 && store.getState().steps.length !== 1) {
+      // no value and backspace twice -> delete step
+      // on key up: or will delete character in newly focused field when key released
+      if (deleteMe) {
+        store.dispatch({ type: 'REMOVE STEP', num })
+      }
+
+      if (input.value === '') {
+        deleteMe = true
+      } else {
+        deleteMe = false
+      }
+    }
   }
 
   input.addEventListener('keydown', keyDown)
