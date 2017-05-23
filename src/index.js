@@ -114,13 +114,13 @@ function Step (num, inputValue) {
     if (kc === 38 || (event.shiftKey && kc === 9)) {
       // up or tab shift
       store.dispatch({ type: 'FOCUS DECREMENT' })
-    } else if (kc === 13 && num === store.getState().steps.length - 1) {
-      // enter on last input
-      store.dispatch({ type: 'ADD STEP' })
     } else if (kc === 13 && input.selectionStart === 0) {
       // enter and marker in beginning of input field
       // -> insert input and shift steps down
       store.dispatch({ type: 'INSERT STEP', num })
+    } else if (kc === 13 && num === store.getState().steps.length - 1) {
+      // enter on last input
+      store.dispatch({ type: 'ADD STEP' })
     } else if (kc === 9 || kc === 13 || kc === 40) {
       // tab, enter or down
       store.dispatch({ type: 'FOCUS INCREMENT' })
