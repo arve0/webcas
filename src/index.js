@@ -16,9 +16,10 @@ function reducer (state = initialState, action) {
         let num = state.steps.length
         let input = ''
         let output = ''
-        state.steps.push({ num, input, output })
-        state.focus = num
-        return state
+        let newState = Object.assign({}, state)
+        newState.steps = [...state.steps, {num, input, output}]
+        newState.focus = num
+        return newState
       }
 
     case 'STEP INPUT':
@@ -56,20 +57,29 @@ function reducer (state = initialState, action) {
 const store = createStore(reducer)
 global.store = store
 
+let previousState = store.getState()
 store.subscribe(() => {
-  const _steps = document.getElementById('steps')
   let state = store.getState()
+  const _steps = document.getElementById('steps')
+  if (previousState.steps.length !== state.steps.length) {
+    _steps.innerHTML = ''
 
-  _steps.innerHTML = ''
+    state.steps.forEach(step => {
+      let elm = Step(step)
+      _steps.appendChild(elm)
 
-  state.steps.forEach(step => {
-    let elm = Step(step)
-    _steps.appendChild(elm)
+      if (state.focus === step.num) {
+        elm.childNodes[0].focus()
+      }
+    })
+  }
 
-    if (state.focus === step.num) {
-      elm.childNodes[0].focus()
-    }
-  })
+  let focusedInput = document.querySelector('input:focus')
+  let supposedToBeFocused = _steps.children[state.focus]
+  if (focusedInput !== supposedToBeFocused) {
+    supposedToBeFocused.childNodes[0].focus()
+  }
+  previousState = state
 })
 
 store.dispatch({ type: 'ADD STEP' })
@@ -90,8 +100,8 @@ function Step (step) {
 
   function onKey (event) {
     let kc = event.keyCode
-    // 13 enter, 9 tab, 38 up, 40 down
-    if (!(kc === 13 || kc === 9 || kc === 38 || kc === 40)) {
+    // 9 tab, 13 enter, 38 up, 40 down
+    if (!(kc === 9 || kc === 13 || kc === 38 || kc === 40)) {
       return
     }
     event.preventDefault()
@@ -102,13 +112,11 @@ function Step (step) {
       input: input.value
     })
 
-    if (kc === 38 || event.shiftKey && kc === 9) {
+    if (kc === 38 || (event.shiftKey && kc === 9)) {  // up or tab shift
       store.dispatch({ type: 'FOCUS DECREMENT' })
-    } else if (kc === 40) {
-      store.dispatch({ type: 'FOCUS INCREMENT' })
-    } else if (!event.shiftKey && store.getState().steps.length <= step.num + 1) {
+    } else if (kc === 13 && step.num === store.getState().steps.length - 1) {  // enter on last input
       store.dispatch({ type: 'ADD STEP' })
-    } else if (!event.shiftKey) {
+    } else if (kc === 9 || kc === 13 || kc === 40) {  // tab, enter or down
       store.dispatch({ type: 'FOCUS INCREMENT' })
     }
   }
