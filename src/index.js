@@ -11,27 +11,26 @@ const initialState = {
 function reducer (state = initialState, action) {
   switch (action.type) {
     case 'ADD STEP':
-      {  // add scope to allow `let var = ` inside switch case
-        return Object.assign({}, state, {
-          steps: [...state.steps, { num: state.steps.length, input: '' }],
-          focus: state.steps.length
-        })
-      }
+      return Object.assign({}, state, {
+        steps: [...state.steps, ''],
+        focus: state.steps.length
+      })
+
+    case 'INSERT STEP':
+      return Object.assign({}, state, {
+        steps: [...state.steps.slice(0, action.num), '', ...state.steps.slice(action.num)]
+      })
 
     case 'STEP INPUT':
-      {
-        let newState = Object.assign({}, state, {
-          steps: [...state.steps]
-        })
-        newState.steps[action.num] = { input: action.input, num: action.num }
-        return newState
-      }
+      return Object.assign({}, state, {
+        steps: [...state.steps.slice(0, action.num), action.input, ...state.steps.slice(action.num + 1)]
+      })
 
     case 'FOCUS':
       return Object.assign({}, state, { focus: action.num })
 
     case 'FOCUS DECREMENT':
-      {
+      {  // add scope to allow `let f = ` inside several cases
         let f = state.focus - 1
         return Object.assign({}, state, {
           focus: f > 0 ? f : 0
@@ -54,15 +53,21 @@ function reducer (state = initialState, action) {
 const store = createStore(reducer)
 global.store = store
 
-let _steps = []  // keep track of steps, TODO: react?
+let _steps = []  // keep track of steps in DOM, TODO: react?
 store.subscribe(() => {
   let state = store.getState()
 
+  if (state.steps.length !== _steps.length) {
+    // inserted or added steps
+    // -> re-render all steps (we do not know if new step is inserted or added)
+    _steps = []
+    document.getElementById('steps').innerHTML = ''
+  }
   state.steps.forEach((step, i) => {
     let _step = _steps[i]
 
     if (!_step) {
-      _step = Step(step)
+      _step = Step(i, step)
       _steps.push(_step)
       document.getElementById('steps').appendChild(_step.root)
     }
@@ -72,9 +77,9 @@ store.subscribe(() => {
     // first step: create new scope
     // else: copy previous scope
     _step.scope = i === 0 ? {} : Object.assign({}, _steps[i - 1].scope)
-    _step.updateOutput(evaluateInput(step.input, _step.scope))
+    _step.updateOutput(evaluateInput(step, _step.scope))
 
-    if (state.focus === step.num && !_step.input.activeElement) {
+    if (state.focus === i && !_step.input.activeElement) {
       _step.input.focus()
     }
   })
@@ -82,10 +87,12 @@ store.subscribe(() => {
 
 store.dispatch({ type: 'ADD STEP' })
 
-function Step (step) {
+function Step (num, inputValue) {
   let root = Elm('<div class=step></div>')
   let input = Elm(`<input type=text>`)
   let output = Elm(`<div class=output></div>`)
+
+  input.value = inputValue
 
   function keyDown (event) {
     let kc = event.keyCode
@@ -95,24 +102,31 @@ function Step (step) {
     }
     event.preventDefault()
 
-    if (kc === 38 || (event.shiftKey && kc === 9)) {  // up or tab shift
+    if (kc === 38 || (event.shiftKey && kc === 9)) {
+      // up or tab shift
       store.dispatch({ type: 'FOCUS DECREMENT' })
-    } else if (kc === 13 && step.num === store.getState().steps.length - 1) {  // enter on last input
+    } else if (kc === 13 && num === store.getState().steps.length - 1) {
+      // enter on last input
       store.dispatch({ type: 'ADD STEP' })
-    } else if (kc === 9 || kc === 13 || kc === 40) {  // tab, enter or down
+    } else if (kc === 13 && input.selectionStart === 0) {
+      // enter and marker in beginning of input field
+      // -> insert input and shift steps down
+      store.dispatch({ type: 'INSERT STEP', num })
+    } else if (kc === 9 || kc === 13 || kc === 40) {
+      // tab, enter or down
       store.dispatch({ type: 'FOCUS INCREMENT' })
     }
   }
 
   function onClick () {
-    store.dispatch({ type: 'FOCUS', num: step.num })
+    store.dispatch({ type: 'FOCUS', num })
   }
 
   function keyUp () {
     store.dispatch({
       type: 'STEP INPUT',
-      num: step.num,
-      input: input.value
+      input: input.value,
+      num
     })
   }
 
