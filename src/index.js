@@ -57,60 +57,40 @@ function reducer (state = initialState, action) {
 const store = createStore(reducer)
 global.store = store
 
-let previousState = store.getState()
+let _steps = []  // keep track of steps, TODO: react?
 store.subscribe(() => {
   let state = store.getState()
-  const _steps = document.getElementById('steps')
-  if (previousState.steps.length !== state.steps.length) {
-    _steps.innerHTML = ''
 
-    state.steps.forEach(step => {
-      let elm = Step(step)
-      _steps.appendChild(elm)
-
-      if (state.focus === step.num) {
-        elm.childNodes[0].focus()
-      }
-    })
-  }
-
-  let focusedInput = document.querySelector('input:focus')
-  let supposedToBeFocused = _steps.children[state.focus]
-  if (focusedInput !== supposedToBeFocused) {
-    supposedToBeFocused.childNodes[0].focus()
-  }
-  previousState = state
+  state.steps.forEach((step, i) => {
+    let _step = _steps[i]
+    if (!_step) {
+      _step = Step(step)
+      _steps.push(_step)
+      document.getElementById('steps').appendChild(_step.root)
+    } else {
+      _step.updateOutput(step.output)
+    }
+    if (state.focus === step.num && !_step.input.activeElement) {
+      _step.input.focus()
+    }
+  })
 })
 
 store.dispatch({ type: 'ADD STEP' })
 
 function Step (step) {
-  let elm = Elm('<div class=step></div>')
+  let root = Elm('<div class=step></div>')
 
   let input = Input(step.input)
+  let output = Output(step.output)
 
-  // function onUpKey (event) {
-  //   // 38 = up key
-  //   if (event.keyCode !== 38) {
-  //     return
-  //   }
-  //   Find previous input
-  // }
-  // TODO: tab completion?
-
-  function onKey (event) {
+  function keyDown (event) {
     let kc = event.keyCode
     // 9 tab, 13 enter, 38 up, 40 down
     if (!(kc === 9 || kc === 13 || kc === 38 || kc === 40)) {
       return
     }
     event.preventDefault()
-
-    store.dispatch({
-      type: 'STEP INPUT',
-      num: step.num,
-      input: input.value
-    })
 
     if (kc === 38 || (event.shiftKey && kc === 9)) {  // up or tab shift
       store.dispatch({ type: 'FOCUS DECREMENT' })
@@ -125,13 +105,26 @@ function Step (step) {
     store.dispatch({ type: 'FOCUS', num: step.num })
   }
 
-  input.addEventListener('keydown', onKey)
+  function keyUp () {
+    store.dispatch({
+      type: 'STEP INPUT',
+      num: step.num,
+      input: input.value
+    })
+  }
+
+  input.addEventListener('keydown', keyDown)
+  input.addEventListener('keyup', keyUp)
   input.addEventListener('click', onClick)
-  elm.appendChild(input)
 
-  elm.appendChild(Output(step.output))
+  root.appendChild(input)
+  root.appendChild(output)
 
-  return elm
+  function updateOutput (str) {
+    output.innerText = str
+  }
+
+  return { root, input, output, updateOutput }
 }
 
 function Input (value) {
