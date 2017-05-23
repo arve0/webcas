@@ -5,7 +5,6 @@ global.math = math
 
 const initialState = {
   steps: [],
-  scope: {},
   focus: 0
 }
 
@@ -16,8 +15,9 @@ function reducer (state = initialState, action) {
         let num = state.steps.length
         let input = ''
         let output = ''
+        let scope = {}
         let newState = Object.assign({}, state)
-        newState.steps = [...state.steps, {num, input, output}]
+        newState.steps = [...state.steps, {num, input, output, scope}]
         newState.focus = num
         return newState
       }
@@ -26,9 +26,15 @@ function reducer (state = initialState, action) {
       {
         let num = action.num
         let input = action.input
-        let [node, evaluated, output] = evaluateInput(input, state.scope)
-        state.steps[num] = { num, input, node, evaluated, output }
-        return state
+        let newState = Object.assign({}, state, {
+          steps: [...state.steps]
+        })
+        // copy previous scope or create new (first step)
+        // scope can be mutated in math.eval, and the mutated scope is saved to current step
+        let scope = num > 0 ? Object.assign({}, state.steps[num - 1].scope) : {}
+        let [node, evaluated, output] = evaluateInput(input, scope)
+        newState.steps[num] = { num, input, node, evaluated, output, scope }
+        return newState
       }
 
     case 'FOCUS':
