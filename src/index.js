@@ -12,14 +12,10 @@ function reducer (state = initialState, action) {
   switch (action.type) {
     case 'ADD STEP':
       {  // add scope to allow `let var = ` inside switch case
-        let num = state.steps.length
-        let input = ''
-        let output = ''
-        let scope = {}
-        let newState = Object.assign({}, state)
-        newState.steps = [...state.steps, {num, input, output, scope}]
-        newState.focus = num
-        return newState
+        return Object.assign({}, state, {
+          steps: [...state.steps, { num: state.steps.length, input: '' }],
+          focus: state.steps.length
+        })
       }
 
     case 'STEP INPUT':
@@ -32,21 +28,22 @@ function reducer (state = initialState, action) {
       }
 
     case 'FOCUS':
-      state.focus = action.num
-      return state
+      return Object.assign({}, state, { focus: action.num })
 
     case 'FOCUS DECREMENT':
       {
         let f = state.focus - 1
-        state.focus = f > 0 ? f : 0
-        return state
+        return Object.assign({}, state, {
+          focus: f > 0 ? f : 0
+        })
       }
 
     case 'FOCUS INCREMENT':
       {
         let f = state.focus + 1
-        state.focus = f < state.steps.length ? f : state.focus
-        return state
+        return Object.assign({}, state, {
+          focus: f < state.steps.length ? f : state.focus
+        })
       }
 
     default:
