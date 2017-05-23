@@ -162,6 +162,7 @@ function evaluateInput (input, scope) {
   } catch (err) {
     output = err.message
   }
+  scope._ = evaluated || ''
   output = typeof evaluated === 'function' ? node.toString() : evaluated
   output = output === undefined ? '' : output
   output = typeof output === 'number' ? math.format(output, precision) : output
