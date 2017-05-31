@@ -26,25 +26,48 @@ x + x
 Du kan bevege deg opp / ned med piltastene eller tab / shift+tab.
 Enter setter inn en ny linje når du er på siste linje.
 
+For å sette inn et nytt felt midt i en rekke av utregninger, flytt markøren til
+starten av feltet og trykk enter.
+
+For å slette et felt, trykk på hvisketasten mens feltet er tomt.
+
 Operasjonene går steg-for-steg, så utregninger du gjør under en linje er ikke
 tilgjengelig i linjen over:
 
 ```js
 x = 10
-y = 2 * x
-x = 2
+y = 2 * x  // 2 * 10 = 20
+x = 3
+y = 2 * x  // 2 * 3 = 6
 ```
 
-## Regneoperasjonene
+# Tall
 
-### Pluss og minus
+## Desimaltall
+Desimaltall skrives med punktum:
+
+```js
+2.1 + 3.3  // 5.5
+```
+
+## 10-er eksponent
+Du kan skrive 10-er eksponent med e:
+
+```js
+5.6 * 10^3  // 5600
+5.6e3       // 5600
+```
+
+# Regneoperasjonene
+
+## Pluss og minus
 Skrives med `+` og `-`. Du kan også bruke `()` for å gruppere utregninger:
 
 ```js
-1 + (3 - 10) - 4
+1 + (3 - 10) - 4  // -10
 ```
 
-### Gange
+## Gange
 Skrives med `*`:
 
 ```js
@@ -59,7 +82,7 @@ y = 2
 x y  // 20, samme som x * y
 ```
 
-### Dele
+## Dele
 Skrives med `/`:
 
 ```js
@@ -71,7 +94,7 @@ Skrives med `/`:
 ```js
 x = 2
 10 / x x    // 10 / x * x = 10
-10 / (x x)  // 10 / (x * x) = 0.1
+10 / (x x)  // 10 / (x * x) = 2.5
 10 / x / x  // samme som over
 ```
 
@@ -83,7 +106,46 @@ R = 8.314462175 J / (K mol)  // 8.314462175 J / (K mol)
 R = 8.314462175 J / K / mol  // 8.314462175 J / (K mol)
 ```
 
+## Eksponent
+Eksponent skrives med `^`:
+
+```js
+2^3  // 2 * 2 * 2 = 8
+```
+
 # Funksjoner
+Du kan lage funksjoner slik som dette:
+
+```js
+f(x) = x^2
+```
+
+Bruk funksjonen slik som dette:
+
+```js
+f(2)  // 4
+f(3)  // 9
+```
+
+Du kan også sende variabler til funksjonen:
+
+```js
+strekning = 2 meter
+f(strekning)  // 4 meter^2
+```
+
+En funksjon kan inngå i en kalkulasjon:
+
+```js
+f(2) * 3  // 12
+```
+
+Funksjonen kan ta i mot flere symboler:
+
+```js
+f(x, y) = x^2 y^3
+f(2, 3)  // 108
+```
 
 # Enheter
 Enheter skrives etter tall. Når en variabel har enhet, vil også utregninger bli med riktig enhet:
@@ -97,7 +159,7 @@ v = x / t  // 2 m/s
 OBS! Det er mulig å lagre over en enhet. For eksempel:
 
 ```js
-m = 10 kg     // 10 kg
+m = 10 kg   // 10 kg
 v = 10 m/s  // 100 kg/s
 ```
 
