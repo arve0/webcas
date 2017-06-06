@@ -94,9 +94,9 @@ store.dispatch({ type: 'ADD STEP' })
 
 function Step (num, inputValue) {
   let root = Elm('<div class=step></div>')
-  let input = Elm(`<input type=text>`)
-  let output = Elm(`<div class=output></div>`)
-  let deleteMe = false
+  let inputWithLabel = Elm(`<label>Input <input type=text></label>`)
+  let input = inputWithLabel.children[0]
+  let output = Elm(`<div class=output>Output</div>`)
 
   input.value = inputValue
 
@@ -158,11 +158,15 @@ function Step (num, inputValue) {
   input.addEventListener('keyup', keyUp)
   input.addEventListener('click', onClick)
 
-  root.appendChild(input)
+  root.appendChild(inputWithLabel)
   root.appendChild(output)
 
   function updateOutput (str) {
-    output.innerText = str
+    let outputSpan = Elm('<span></span>')
+    outputSpan.innerText = str
+
+    output.innerText = 'Output'
+    output.appendChild(outputSpan)
   }
 
   return { root, input, output, updateOutput }
@@ -175,7 +179,7 @@ function Elm (html) {
 }
 
 function evaluateInput (input, scope) {
-  const precision = 8
+  const precision = 16
   let node, evaluated, output
   try {
     node = math.parse(input)
@@ -190,6 +194,18 @@ function evaluateInput (input, scope) {
   scope._ = evaluated || ''
   output = typeof evaluated === 'function' ? node.toString() : evaluated
   output = output === undefined ? '' : output
-  output = typeof output === 'number' ? math.format(output, precision) : output
+  switch (typeof output) {
+    case 'object':
+      output = output.format ? output.format(precision) : output
+      break;
+
+    case 'number':
+      ouput = math.format(output, precision)
+      break;
+
+    default:
+      // do nothing, may be function
+      break;
+  }
   return output
 }
