@@ -132,24 +132,24 @@ function Step (num, inputValue) {
   }
 
   function keyUp (event) {
+    let wasEmpty = store.getState().steps[num] === ''
+
     store.dispatch({
       type: 'STEP INPUT',
       input: input.value,
       num
     })
 
-    // 8 backspace
-    if (event.keyCode === 8 && store.getState().steps.length !== 1) {
-      // no value and backspace twice -> delete step
-      // on key up: or will delete character in newly focused field when key released
-      if (deleteMe) {
-        store.dispatch({ type: 'REMOVE STEP', num })
-      }
-
-      if (input.value === '') {
-        deleteMe = true
-      } else {
-        deleteMe = false
+    // 8 backspace, 46 delete
+    if (wasEmpty && (event.keyCode === 8 || event.keyCode === 46) && store.getState().steps.length !== 1) {
+      // no value and backspace/delete -> delete step
+      // must be on key up, or else erases character in newly focused field when key released (preventDefault gets nasty)
+      store.dispatch({ type: 'REMOVE STEP', num })
+      if (event.keyCode === 8  || store.getState().steps.length === num) {
+        // move focus one up on backspace
+        // keep focus same num on delete (focus to input below deleted input)
+        // if we are in last step and delete it, move focus one up
+        store.dispatch({ type: 'FOCUS DECREMENT' })
       }
     }
   }
