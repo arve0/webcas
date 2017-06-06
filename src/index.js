@@ -192,20 +192,25 @@ function evaluateInput (input, scope) {
     output = err.message
   }
   scope._ = evaluated || ''
-  output = typeof evaluated === 'function' ? node.toString() : evaluated
-  output = output === undefined ? '' : output
-  switch (typeof output) {
+
+  switch (typeof evaluated) {
     case 'object':
-      output = output.format ? output.format(precision) : output
+      output = evaluated.format ? evaluated.format(precision) : evaluated.toString()
       break;
 
     case 'number':
-      ouput = math.format(output, precision)
+      output = math.format(evaluated, precision)
+      break;
+
+    case 'function':
+      output = node.toString()
       break;
 
     default:
-      // do nothing, may be function
+      // error in input? set output empty
+      output = ''
       break;
   }
+
   return output
 }
