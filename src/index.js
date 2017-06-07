@@ -191,7 +191,7 @@ function evaluateInput (input, scope) {
   } catch (err) {
     output = err.message
   }
-  scope._ = evaluated || ''
+  scope._ = evaluated !== undefined ? evaluated : ''
 
   switch (typeof evaluated) {
     case 'object':
@@ -207,7 +207,7 @@ function evaluateInput (input, scope) {
       break
 
     case 'boolean':
-      output = evaluated
+      output = evaluated.toString()
       break
 
     default:
