@@ -196,20 +196,24 @@ function evaluateInput (input, scope) {
   switch (typeof evaluated) {
     case 'object':
       output = evaluated.format ? evaluated.format(precision) : evaluated.toString()
-      break;
+      break
 
     case 'number':
       output = math.format(evaluated, precision)
-      break;
+      break
 
     case 'function':
       output = node.toString()
-      break;
+      break
+
+    case 'boolean':
+      output = evaluated
+      break
 
     default:
       // error in input? set output empty
-      output = ''
-      break;
+      output = evaluated || ''
+      break
   }
 
   return output
