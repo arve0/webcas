@@ -189,7 +189,7 @@ function evaluateInput (input, scope) {
       evaluated = math.simplify(node)
     }
   } catch (err) {
-    output = err.message
+    evaluated = err.message
   }
   scope._ = evaluated !== undefined ? evaluated : ''
 
