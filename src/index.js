@@ -179,7 +179,7 @@ function Elm (html) {
 }
 
 function evaluateInput (input, scope) {
-  const precision = 16
+  const precision = 15
   let node, evaluated, output
   try {
     node = math.parse(input)
