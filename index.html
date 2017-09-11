@@ -36,15 +36,51 @@
     margin-left: 0.4em;
     font-size: 1.5em;
   }
+  #menu > button {
+    font-size: 1em;
+    padding: 0.3em;
+    background-color: white;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 3px;
+    margin-bottom: 1em;
+  }
+  #menu > button:active {
+    color: black;
+    background-color:#efefef;
+  }
+  #menu > button:hover {
+    transform: translateY(0.1em);
+  }
+  #menu img {
+    vertical-align: bottom;
+  }
+  #name {
+    opacity: 0;
+    height: 0;
+    transition: opacity 1s ease-out;
+    overflow: hidden;
+  }
+  #name.show {
+    opacity: 1;
+    height: auto;
+  }
 </style>
 </head>
 
 <body>
   <div id="container">
     <h1>WebCAS</h1>
+    <div id="menu">
+      <button id="save" v-on:click="save"><img src="save.svg"> Save</button>
+      <button id="open" v-on:click="open"><img src="folder.svg"> Open</button>
+    </div>
     <div id="steps"></div>
+    <v-dialog/>
   </div>
-  <script src="index.js"></script>
+  <script src="manifest.js"></script>
+  <script src="vendor.js"></script>
+  <script src="client.js"></script>
 </body>
 
 </html>

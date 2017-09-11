@@ -1,5 +1,9 @@
 const math = require('mathjs')
 const { createStore } = require('redux')
+const Vue = require('vue/dist/vue.common.js')
+const VModal = require('vue-js-modal').default
+
+Vue.use(VModal, { dialog: true })
 
 global.math = math
 
@@ -88,6 +92,24 @@ store.subscribe(() => {
       _step.input.focus()
     }
   })
+})
+
+const app = new Vue({
+  el: '#container',
+  methods: {
+    save: function () {
+      console.log('save')
+      this.$modal.show('dialog', {
+        text: 'save'
+      })
+    },
+    open: function () {
+      console.log('open')
+      this.$modal.show('dialog', {
+        text: 'open'
+      })
+    }
+  }
 })
 
 store.dispatch({ type: 'ADD STEP' })
