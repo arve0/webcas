@@ -19,7 +19,7 @@
           </div>
 
           <div class="modal-footer">
-            <button class="modal-button" @click="$emit('close')">
+            <button class="modal-button" @click="$emit('button')">
               <slot name="button">
                 Close
               </slot>
@@ -33,6 +33,24 @@
 
 <script>
 export default {
+  methods: {
+    keyup: function (event) {
+      // 13 enter
+      if (event.keyCode === 13) {
+        this.$emit('button');
+      }
+      // 27 esc
+      if (event.keyCode === 27) {
+        this.$emit('close');
+      }
+    }
+  },
+  mounted: function () {
+    window.addEventListener('keyup', this.keyup)
+  },
+  destroyed: function () {
+    window.removeEventListener('keyup', this.keyup)
+  }
 }
 </script>
 

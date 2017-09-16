@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Web Computer Algebra System</title>
+</head>
+
+<body style="display:none">
+  <div id="container">
+    <h1>WebCAS</h1>
+    <div id="menu">
+      <button @click="openSaveModal"><img src="save.svg"> Save</button>
+      <button @click="openModal = true"><img src="folder.svg"> Open</button>
+    </div>
+    <div id="steps"></div>
+
+    <modal v-if="saveModal" @close="saveModal = false" @button="save">
+      <span slot="title">Save</span>
+      <span slot="body">
+        <input
+          placeholder="Input a name"
+          type="text"
+          v-model="name"
+          ref="saveNameInput"
+          @keyup.enter="save"
+          :class="{ bounce: noNameInput }">
+      </span>
+      <span slot="button">Save</span>
+    </modal>
+
+    <modal v-if="openModal" @close="openModal = false" @button="openModal = false">
+      <span slot="title">Open</span>
+      <span slot="body">
+        <p v-if="saves.length === 0">No saves found.</p>
+        <ul class="openList">
+          <li v-for="save in saves" @click.self="open(save)">
+            {{ save }}
+            <img src="x.svg" @click="remove(save)" title="Delete">
+          </li>
+        </ul>
+      </span>
+    </modal>
+  </div>
+</body>
+
+</html>

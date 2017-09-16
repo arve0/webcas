@@ -1,5 +1,9 @@
 const math = require('mathjs')
 const { createStore } = require('redux')
+
+// POI extracts styles into html template in production build
+import './style.css';
+
 const Vue = require('vue/dist/vue.common.js')
 
 import Modal from './modal.vue'
@@ -102,19 +106,23 @@ const app = new Vue({
   data: {
     name: '',
     saved: Date.now(),
-    showSaveModal: false,
-    showOpenModal: false,
+    saveModal: false,
+    openModal: false,
     noNameInput: false,
     saves: []
   },
   methods: {
+    openSaveModal: function () {
+      this.saveModal = true;
+      setTimeout(() => this.$refs.saveNameInput.focus(), 100);
+    },
     save: function () {
       if (this.name === '') {
         this.noNameInput = true;
         setTimeout(() => this.noNameInput = false, 1000);
         return;
       }
-      this.showSaveModal = false;
+      this.saveModal = false;
       localStorage.setItem('save:' + this.name, JSON.stringify(store.getState()));
       this.getSaves()
     },
@@ -123,17 +131,7 @@ const app = new Vue({
         type: 'SET STATE',
         state: JSON.parse(localStorage.getItem('save:' + saveName))
       })
-      this.showOpenModal = false;
-    },
-    keyup: function (event) {
-      // 13 enter
-      if (event.keyCode === 13 && this.showSaveModal) {
-        this.save()
-      }
-      // 27 esc
-      if (event.keyCode === 27 && this.showSaveModal) {
-        this.showSaveModal = false;
-      }
+      this.openModal = false;
     },
     getSaves: function () {
       this.saves = Object.keys(localStorage)
@@ -148,11 +146,9 @@ const app = new Vue({
     }
   },
   mounted: function () {
-   window.addEventListener('keyup', this.keyup)
-   this.getSaves()
-  },
-  destroyed: function () {
-   window.removeEventListener('keyup', this.keyup)
+   // avoid template rendering, hide until loaded
+   document.body.style.display = 'block';
+   this.getSaves();
   }
 })
 
