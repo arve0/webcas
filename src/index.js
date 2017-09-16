@@ -20,8 +20,11 @@ const initialState = {
 
 function reducer (state = initialState, action) {
   switch (action.type) {
+    case 'RENDERED':
+    return Object.assign(state, { dirty: false })
+
     case 'SET STATE':
-      return Object.assign({}, action.state)
+      return Object.assign({}, action.state, { dirty: true })
 
     case 'ADD STEP':
       return Object.assign({}, state, {
@@ -80,6 +83,7 @@ store.subscribe(() => {
     // -> re-render all steps (we do not know if new step is inserted or added)
     _steps = []
     document.getElementById('steps').innerHTML = ''
+    setTimeout(() => store.dispatch({ type: 'RENDERED' }), 100)
   }
   state.steps.forEach((step, i) => {
     let _step = _steps[i]
@@ -142,12 +146,10 @@ const app = new Vue({
     open: function (saveName) {
       store.dispatch({
         type: 'SET STATE',
-        state: Object.assign(
-          JSON.parse(localStorage.getItem('save:' + saveName)),
-          { dirty: true }
-        )
+        state: Object.assign(JSON.parse(localStorage.getItem('save:' + saveName)))
       })
       this.openModal = false;
+      this.name = saveName;
     },
     getSaves: function () {
       this.saves = Object.keys(localStorage)
@@ -161,11 +163,11 @@ const app = new Vue({
       }
     },
     keydown: function (event) {
-      if (!event.ctrl && !event.metaKey) {
+      if (!event.ctrlKey && !event.metaKey) {
         return;
       }
       if (event.keyCode === 83) {
-        // 83 s
+        // 83 s -> save
         event.preventDefault()
         if (this.saveModal) {
           this.save()
@@ -173,7 +175,7 @@ const app = new Vue({
           this.openSaveModal()
         }
       } else if (event.keyCode === 79) {
-        // 79 o
+        // 79 o -> open
         event.preventDefault()
         this.openModal = true;
       }
