@@ -21,6 +21,7 @@ function reducer (state = initialState, action) {
   switch (action.type) {
     case 'SET STATE':
       return Object.assign({}, action.state)
+
     case 'ADD STEP':
       return Object.assign({}, state, {
         steps: [...state.steps, ''],
@@ -112,6 +113,17 @@ const app = new Vue({
     saves: []
   },
   methods: {
+    erase: function () {
+      store.dispatch({
+        type: 'SET STATE',
+        state: {
+          steps: [],
+          focus: 0
+        }
+      })
+      store.dispatch({ type: 'ADD STEP' })
+      this.name = ''
+    },
     openSaveModal: function () {
       this.saveModal = true;
       setTimeout(() => this.$refs.saveNameInput.focus(), 100);
