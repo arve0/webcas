@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "poi build",
-    "start": "poi",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "publish": "git subtree push --prefix dist origin gh-pages",
+    "start": "poi"
   },
   "repository": {
     "type": "git",
