@@ -1,9 +1,10 @@
 const math = require('mathjs')
 const { createStore } = require('redux')
 const Vue = require('vue/dist/vue.common.js')
-const VModal = require('vue-js-modal').default
 
-Vue.use(VModal, { dialog: true })
+import Modal from './modal.vue'
+
+Vue.component('modal', Modal)
 
 global.math = math
 
@@ -14,6 +15,8 @@ const initialState = {
 
 function reducer (state = initialState, action) {
   switch (action.type) {
+    case 'SET STATE':
+      return Object.assign({}, action.state)
     case 'ADD STEP':
       return Object.assign({}, state, {
         steps: [...state.steps, ''],
@@ -96,19 +99,60 @@ store.subscribe(() => {
 
 const app = new Vue({
   el: '#container',
+  data: {
+    name: '',
+    saved: Date.now(),
+    showSaveModal: false,
+    showOpenModal: false,
+    noNameInput: false,
+    saves: []
+  },
   methods: {
     save: function () {
-      console.log('save')
-      this.$modal.show('dialog', {
-        text: 'save'
-      })
+      if (this.name === '') {
+        this.noNameInput = true;
+        setTimeout(() => this.noNameInput = false, 1000);
+        return;
+      }
+      this.showSaveModal = false;
+      localStorage.setItem('save:' + this.name, JSON.stringify(store.getState()));
+      this.getSaves()
     },
-    open: function () {
-      console.log('open')
-      this.$modal.show('dialog', {
-        text: 'open'
+    open: function (saveName) {
+      store.dispatch({
+        type: 'SET STATE',
+        state: JSON.parse(localStorage.getItem('save:' + saveName))
       })
+      this.showOpenModal = false;
+    },
+    keyup: function (event) {
+      // 13 enter
+      if (event.keyCode === 13 && this.showSaveModal) {
+        this.save()
+      }
+      // 27 esc
+      if (event.keyCode === 27 && this.showSaveModal) {
+        this.showSaveModal = false;
+      }
+    },
+    getSaves: function () {
+      this.saves = Object.keys(localStorage)
+        .filter(s => s.match(/^save:/))
+        .map(s => s.replace('save:', ''));
+    },
+    remove: function (saveName) {
+      if (confirm(`Delete "${saveName}"?`)) {
+        localStorage.removeItem('save:' + saveName);
+        this.saves = this.saves.filter(s => s !== saveName);
+      }
     }
+  },
+  mounted: function () {
+   window.addEventListener('keyup', this.keyup)
+   this.getSaves()
+  },
+  destroyed: function () {
+   window.removeEventListener('keyup', this.keyup)
   }
 })
 

@@ -5,78 +5,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Web Computer Algebra System</title>
-<style>
-  body {
-    width: 80%;
-    margin-left: auto;
-    margin-right: auto;
-    font-family: Consolas, Monaco, monospace;
-  }
-  #container {
-    width: 100%;
-  }
-  .step {
-    margin-bottom: 1em;
-  }
-  input[type=text] {
-    width: 100%;
-    font-size: 2em;
-    font-family: Consolas, Monaco, monospace;
-    padding: 0.2em;
-    margin-bottom: 0.2em;
-    border-top: solid 0.04em #eee;
-    border-left: solid 0.04em #eee;
-    border-right: solid 0.04em #eee;
-    border-bottom: solid 0.08em #aaa;
-  }
-  .output {
-    margin-bottom: 0.2em;
-  }
-  .output > span {
-    margin-left: 0.4em;
-    font-size: 1.5em;
-  }
-  #menu > button {
-    font-size: 1em;
-    padding: 0.3em;
-    background-color: white;
-    border-width: 1px;
-    border-style: solid;
-    border-radius: 3px;
-    margin-bottom: 1em;
-  }
-  #menu > button:active {
-    color: black;
-    background-color:#efefef;
-  }
-  #menu > button:hover {
-    transform: translateY(0.1em);
-  }
-  #menu img {
-    vertical-align: bottom;
-  }
-  #name {
-    opacity: 0;
-    height: 0;
-    transition: opacity 1s ease-out;
-    overflow: hidden;
-  }
-  #name.show {
-    opacity: 1;
-    height: auto;
-  }
-</style>
+  <link rel="stylesheet" href="src/style.css">
 </head>
 
 <body>
   <div id="container">
     <h1>WebCAS</h1>
     <div id="menu">
-      <button id="save" v-on:click="save"><img src="save.svg"> Save</button>
-      <button id="open" v-on:click="open"><img src="folder.svg"> Open</button>
+      <button @click="showSaveModal = true"><img src="save.svg"> Save</button>
+      <button @click="showOpenModal = true"><img src="folder.svg"> Open</button>
     </div>
     <div id="steps"></div>
-    <v-dialog/>
+
+    <modal v-if="showSaveModal" @close="save">
+      <span slot="title">Save</span>
+      <span slot="body">
+        <input
+          type="text"
+          placeholder="Input a name"
+          v-model="name"
+          @keyup.enter="save"
+          :class="{ bounce: noNameInput }">
+      </span>
+      <span slot="button">Save</span>
+    </modal>
+
+    <modal v-if="showOpenModal" @close="showOpenModal = false">
+      <span slot="title">Open</span>
+      <span slot="body">
+        <p v-if="saves.length === 0">No saves found.</p>
+        <ul class="openList">
+          <li v-for="save in saves" @click.self="open(save)">
+            {{ save }}
+            <img src="x.svg" @click="remove(save)" title="Delete">
+          </li>
+        </ul>
+      </span>
+    </modal>
   </div>
   <script src="manifest.js"></script>
   <script src="vendor.js"></script>

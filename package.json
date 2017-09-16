@@ -26,8 +26,7 @@
   "dependencies": {
     "mathjs": "3.13.1",
     "redux": "^3.6.0",
-    "vue": "^2.4.2",
-    "vue-js-modal": "^1.2.10"
+    "vue": "^2.4.2"
   },
   "devDependencies": {
     "poi": "^9.3.5"
