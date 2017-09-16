@@ -14,7 +14,8 @@ global.math = math
 
 const initialState = {
   steps: [],
-  focus: 0
+  focus: 0,
+  dirty: false
 }
 
 function reducer (state = initialState, action) {
@@ -74,7 +75,7 @@ let _steps = []  // keep track of steps in DOM, TODO: react?
 store.subscribe(() => {
   let state = store.getState()
 
-  if (state.steps.length !== _steps.length) {
+  if (state.dirty || state.steps.length !== _steps.length) {
     // inserted or added steps
     // -> re-render all steps (we do not know if new step is inserted or added)
     _steps = []
@@ -141,7 +142,10 @@ const app = new Vue({
     open: function (saveName) {
       store.dispatch({
         type: 'SET STATE',
-        state: JSON.parse(localStorage.getItem('save:' + saveName))
+        state: Object.assign(
+          JSON.parse(localStorage.getItem('save:' + saveName)),
+          { dirty: true }
+        )
       })
       this.openModal = false;
     },
