@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "poi build",
-    "publish": "git push && git subtree push --prefix dist origin gh-pages --squash",
+    "dist": "git push && git subtree push --prefix dist origin gh-pages --squash",
     "start": "poi"
   },
   "repository": {
