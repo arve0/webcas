@@ -31,6 +31,7 @@
     "poi": "^9.3.5"
   },
   "poi": {
-    "entry": "src/index.js"
+    "entry": "src/index.js",
+    "homepage": "/webcas/"
   }
 }
