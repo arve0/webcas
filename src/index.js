@@ -143,12 +143,34 @@ const app = new Vue({
         localStorage.removeItem('save:' + saveName);
         this.saves = this.saves.filter(s => s !== saveName);
       }
+    },
+    keydown: function (event) {
+      if (!event.ctrl && !event.metaKey) {
+        return;
+      }
+      if (event.keyCode === 83) {
+        // 83 s
+        event.preventDefault()
+        if (this.saveModal) {
+          this.save()
+        } else {
+          this.openSaveModal()
+        }
+      } else if (event.keyCode === 79) {
+        // 79 o
+        event.preventDefault()
+        this.openModal = true;
+      }
     }
   },
   mounted: function () {
-   // avoid template rendering, hide until loaded
-   document.body.style.display = 'block';
-   this.getSaves();
+    window.addEventListener('keydown', this.keydown)
+    // avoid template rendering, hide until loaded
+    document.body.style.display = 'block';
+    this.getSaves();
+  },
+  destroyed: function () {
+    window.removeEventListener('keyup', this.keydown)
   }
 })
 
