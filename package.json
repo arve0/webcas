@@ -32,6 +32,6 @@
   },
   "poi": {
     "entry": "src/index.js",
-    "homepage": "/webcas/"
+    "homepage": "./"
   }
 }
