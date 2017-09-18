@@ -3,6 +3,7 @@ const { createStore } = require('redux')
 
 // POI extracts styles into html template in production build
 import './style.css';
+import './polyfills.js';
 
 const Vue = require('vue/dist/vue.common.js')
 
