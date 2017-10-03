@@ -119,9 +119,11 @@ export default {
       setTimeout(() => this.$refs.saveNameInput.focus(), 100);
     },
     erase: function () {
-      this.steps = [{ input: '', scope: {}, i: 0 }];
-      this.name = '';
-      this.rerender();
+      if (confirm(`This will delete all steps, are you sure?`)) {
+        this.steps = [{ input: '', scope: {}, i: 0 }];
+        this.name = '';
+        this.rerender();
+      }
     },
     save: function (saveName) {
       if (!saveName || saveName === '') {
