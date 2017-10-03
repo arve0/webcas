@@ -7,27 +7,6 @@ body {
 #container {
   width: 100%;
 }
-.step {
-  margin-bottom: 1em;
-}
-input[type=text] {
-  width: 98%;
-  font-size: 2em;
-  font-family: Consolas, Monaco, monospace;
-  padding: 1%;
-  margin-bottom: 0.2em;
-  border-top: solid 0.04em #eee;
-  border-left: solid 0.04em #eee;
-  border-right: solid 0.04em #eee;
-  border-bottom: solid 0.08em #aaa;
-}
-.output {
-  margin-bottom: 0.2em;
-}
-.output > span {
-  margin-left: 0.4em;
-  font-size: 1.5em;
-}
 #menu > button {
   font-size: 1em;
   padding: 0.3em;
@@ -46,6 +25,27 @@ input[type=text] {
 }
 #menu img {
   vertical-align: bottom;
+}
+.step {
+  margin-bottom: 1em;
+}
+input[type="text"] {
+  width: 98%;
+  font-size: 2em;
+  font-family: Consolas, Monaco, monospace;
+  padding: 1%;
+  margin-bottom: 0.2em;
+  border-top: solid 0.04em #eee;
+  border-left: solid 0.04em #eee;
+  border-right: solid 0.04em #eee;
+  border-bottom: solid 0.08em #aaa;
+}
+.output {
+  margin-bottom: 0.2em;
+}
+.output > span {
+  margin-left: 0.4em;
+  font-size: 1.5em;
 }
 #name {
   opacity: 0;
