@@ -23,15 +23,13 @@
     "url": "https://github.com/arve0/webcas/issues"
   },
   "dependencies": {
-    "mathjs": "3.13.1",
-    "redux": "^3.6.0",
-    "vue": "^2.4.2"
+    "mathjs": "3.13.1"
   },
   "devDependencies": {
-    "poi": "^9.3.5"
+    "poi": "^9.3.7"
   },
   "poi": {
     "entry": "src/index.js",
-    "homepage": "/webcas/"
+    "homepage": "./"
   }
 }
